@@ -72,7 +72,7 @@ class formValidation {
     const isValid = errorMessages.length === 0
     const isEmpty = fieldElement.value.length === 0
 
-    fieldElement.classList.toggle(this.stateClasses.isInvalid, !isValid)
+    fieldElement.classList.toggle(this.stateClasses.isInvalid, !isValid && !isEmpty)
     fieldElement.parentElement.classList.toggle(this.stateClasses.isRequired, isEmpty)
 
     fieldElement.ariaInvalid = !isValid
