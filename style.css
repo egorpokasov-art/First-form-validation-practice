@@ -77,12 +77,12 @@ body {
 
   &.is-valid {
     border-color: var(--color-green);
-    box-shadow: 2px 2px 4px var(--color-light);
+    box-shadow: 1px 1px 3px var(--color-light);
   }
 
   &.is-invalid {
     border-color: var(--color-red);
-    box-shadow: 2px 2px 4px var(--color-red);
+    box-shadow: 1px 1px 3px var(--color-red);
   }
 }
 
@@ -147,10 +147,10 @@ button {
 .form__field,
 .form__radios,
 .form__checkbox {
+  width: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 100%;
 
   &.is-required::after {
     content: '*';
@@ -198,10 +198,34 @@ button {
   justify-content: center;
   align-items: center;
   column-gap: 20px;
+  user-select: none;
   border: 2px solid var(--color-light-gray);
   border-radius: var(--border-radius);
-  user-select: none;
-  padding: 15px;
+  padding: 10px;
+
+  .form__radios-errors {
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    top: calc(100% + 5px);
+  }
+
+  &.is-required::after {
+    content: '*';
+    position: absolute;
+    z-index: 100;
+    top: -17px;
+    left: -5px;
+    color: var(--color-red);
+  }
+
+  &:has(.form__radios-errors:empty) {
+    margin-bottom: 0;
+  }
+
+  &:has(.form__radios-errors:not(:empty)) {
+    margin-bottom: 25px;
+  }
 }
 
 .form__radios-input {
@@ -226,6 +250,15 @@ button {
   align-items: center;
   column-gap: 10px;
   user-select: none;
+
+  &.is-required::after {
+    content: '*';
+    position: absolute;
+    z-index: 100;
+    top: -3px;
+    left: -5px;
+    color: var(--color-red);
+  }
 }
 
 .form__checkbox-input {
@@ -255,6 +288,7 @@ button {
 
 .form__radios-label,
 .form__checkbox-label {
+  display: inline-block;
   border: 2px solid transparent;
   border-radius: 5px;
   padding: 10px;
@@ -294,7 +328,7 @@ textarea
 ):is(:hover, :focus) {
   outline: none;
   border: 2px solid var(--color-light);
-  box-shadow: 2px 2px 4px var(--color-light);
+  box-shadow: 1px 1px 3px var(--color-light);
 }
 
 :is(.form__radios-input, .form__checkbox-input):focus {

@@ -62,7 +62,7 @@
       name="password"
       minlength="8"
       maxlength="16"
-      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{3,8}"
+      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}"
       title="Пароль должен содержать хотя бы одну заглавную и строчную латинские буквы и не менее одной цифры"
       aria-errormessage="password-errors"
       placeholder=" "
@@ -135,8 +135,7 @@
       class="form__radios-errors"
       id="gender-errors"
       data-js-errors
-    >
-    </span>
+    ></span>
   </fieldset>
 
   <div class="form__checkbox">
