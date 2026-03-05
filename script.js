@@ -128,6 +128,8 @@ class formValidation {
   onSubmit(event) {
     const { target } = event
     const isForm = target.matches(this.selectors.form)
+    let isFormValid = true
+    let firstInvalidField = null
 
     if (!isForm) return
 
@@ -136,10 +138,20 @@ class formValidation {
     const requiredFields = [...target.elements].filter(element => element.required)
 
     requiredFields.forEach(field => {
-      this.validateField(field)
+      if (!this.validateField(field)) {
+        isFormValid = false
+
+        if (!firstInvalidField) {
+          firstInvalidField = field
+        }
+      }
     })
 
+    if (!isFormValid) {
+      event.preventDefault()
 
+      firstInvalidField.focus()
+    }
   }
 
   bindEvents() {

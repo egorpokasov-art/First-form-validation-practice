@@ -89,14 +89,19 @@ body {
 .form__field-errors,
 .form__radios-errors,
 .form__checkbox-errors {
-  display: flex;
+  width: 100%;
+  display: inline-flex;
   flex-direction: column;
   justify-content: flex-start;
   row-gap: 5px;
-  margin-top: 6px;
+  margin-top: 10px;
+  border: 2px solid var(--color-red);
+  border-radius: var(--border-radius);
+  padding: 7px 10px;
 
   &:empty {
     display: none;
+    border: none;
   }
 }
 
