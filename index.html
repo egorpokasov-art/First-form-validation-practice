@@ -36,6 +36,8 @@
       name="login"
       minlength="5"
       maxlength="15"
+      pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+      title="Введите email в формате: ivan@mail.ru"
       aria-errormessage="login-errors"
       placeholder=" "
       required
@@ -86,7 +88,7 @@
       class="form__field-input input"
       name="about"
       id="about"
-      maxlength="150"
+      maxlength="250"
       placeholder=" "
     ></textarea>
     <label

@@ -105,6 +105,10 @@ body {
   }
 }
 
+.form__checkbox-errors {
+  margin-top: 0;
+}
+
 .field__error {
   font-size: 14px;
   color: var(--color-red);
@@ -171,6 +175,7 @@ button {
   & textarea {
     height: 90px;
     resize: none;
+    overflow-y: auto;
     padding-top: 11px;
   }
 
@@ -190,7 +195,7 @@ button {
   &:has(.form__field-input:not(:placeholder-shown)) .form__field-label {
     z-index: 100;
     top: -13px;
-    left: 0;
+    left: 3px;
     color: var(--color-light);
     padding-left: 5px;
     scale: 0.9;
@@ -212,7 +217,7 @@ button {
     position: absolute;
     z-index: 100;
     left: 0;
-    top: calc(100% + 5px);
+    top: calc(100% + 3px);
   }
 
   &.is-required::after {
@@ -229,7 +234,7 @@ button {
   }
 
   &:has(.form__radios-errors:not(:empty)) {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
   }
 }
 
@@ -296,7 +301,7 @@ button {
   display: inline-block;
   border: 2px solid transparent;
   border-radius: 5px;
-  padding: 10px;
+  padding: 7px;
 }
 
 .form__submit-button {

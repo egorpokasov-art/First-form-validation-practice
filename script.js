@@ -17,9 +17,9 @@ class formValidation {
 
   errorMessages = {
     valueMissing: () => 'Пожалуйста, заполните это поле.',
-    patternMismatch: ({title}) => title || 'Пароль не соответствует требованиям заполнения.',
-    tooLong: ({maxLength}) => `Максимальное количество вводимых символов - ${maxLength}`,
-    tooShort: ({minLength, type}) => {
+    patternMismatch: ({ title }) => title || 'Пароль не соответствует требованиям заполнения.',
+    tooLong: ({ maxLength }) => `Максимальное количество вводимых символов - ${ maxLength }`,
+    tooShort: ({ minLength, type }) => {
       return type === 'password' ?
         `Пароль должен содержать не менее ${minLength} символов.` :
         `Минимальная длина логина не менее ${minLength} символов.`
@@ -104,18 +104,18 @@ class formValidation {
     this.validateField(target)
   }
 
-  inputStatusChange(event) {
-    const { target } = event
-
-    if (!target) return
-
-    if (this.validateField(target)) {
-      // target.style.boxShadow = '1px 1px 3px var(--color-green)'
-      // target.style.borderColor = 'var(--color-green)'
-
-      target.classList.add(this.stateClasses.isValid)
-    }
-  }
+  // inputStatusChange(event) {
+  //   const { target } = event
+  //
+  //   if (!target) return
+  //
+  //   if (this.validateField(target)) {
+  //     target.style.boxShadow = '1px 1px 3px var(--color-green)'
+  //     target.style.borderColor = 'var(--color-green)'
+  //
+  //     // target.classList.add(this.stateClasses.isValid)
+  //   }
+  // }
 
   // formStatusChange(event) {
   //   const { target } = event
@@ -168,13 +168,12 @@ class formValidation {
   }
 
   bindEvents() {
-    const formElement = document.querySelector(this.selectors.form)
-    const formRequiredElementsList = [...formElement.elements]
-      .filter(element => element.required)
-
-    formRequiredElementsList.forEach(element => {
-        element.addEventListener('input', (event) => this.inputStatusChange(event))
-      })
+    // const formElement = document.querySelector(this.selectors.form)
+    // const formRequiredElementsList = [...formElement.elements].filter(element => element.required)
+    //
+    // formRequiredElementsList.forEach(element => {
+    //     element.addEventListener('input', (event) => this.inputStatusChange(event))
+    //   })
 
     document.addEventListener('blur', (event) => this.onBlur(event), true)
     document.addEventListener('change', (event) => this.onToggleChange(event))
