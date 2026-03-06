@@ -34,10 +34,10 @@
       type="text"
       id="login"
       name="login"
-      minlength="5"
+      minlength="6"
       maxlength="15"
       pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
-      title="Введите email в формате: ivan@mail.ru"
+      title="Введите e-mail в формате: ivan@mail.ru"
       aria-errormessage="login-errors"
       placeholder=" "
       required
@@ -83,9 +83,9 @@
     ></span>
   </div>
 
-  <div class="form__field">
+  <div class="form__field textarea__emulator input">
     <textarea
-      class="form__field-input input"
+      class="form__field-input hidden"
       name="about"
       id="about"
       maxlength="250"
@@ -170,3 +170,19 @@
 </form>
 </body>
 </html>
+
+<!--<div class="textarea__emulator input">-->
+<!--  <textarea-->
+<!--    class="hidden"-->
+<!--    name="about"-->
+<!--    id="f"-->
+<!--    maxlength="550"-->
+<!--    placeholder=" "-->
+<!--  ></textarea>-->
+<!--  <label-->
+<!--    class="form__field-label"-->
+<!--    for="f"-->
+<!--  >-->
+<!--    О себе-->
+<!--  </label>-->
+<!--</div>-->
