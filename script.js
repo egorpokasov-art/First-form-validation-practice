@@ -17,14 +17,16 @@ class formValidation {
 
   errorMessages = {
     valueMissing: () => 'Пожалуйста, заполните это поле.',
-    patternMismatch: ({ title }) => title || 'Пароль не соответствует требованиям заполнения.',
-    tooLong: ({ maxLength }) => `Максимальное количество вводимых символов - ${ maxLength }`,
-    tooShort: ({ minLength, type }) => {
+    patternMismatch: ({title}) => title || 'Пароль не соответствует требованиям заполнения.',
+    tooLong: ({maxLength}) => `Максимальное количество вводимых символов - ${maxLength}`,
+    tooShort: ({minLength, type}) => {
       return type === 'password' ?
         `Пароль должен содержать не менее ${minLength} символов.` :
         `Минимальная длина логина не менее ${minLength} символов.`
     },
   }
+
+  fieldValidCounter = 0
 
   constructor() {
     // this.form = document.querySelector(this.selectors.form)
@@ -81,21 +83,25 @@ class formValidation {
 
     fieldElement.ariaInvalid = !isValid
 
+    if (isValid) this.fieldValidCounter += 1
+
     return isValid
   }
 
   onBlur(event) {
-    const { target } = event
+    const {target} = event
     const isRequired = target.required
     const isFormField = target.closest(this.selectors.form)
 
     if (target && isRequired && isFormField) {
       this.validateField(target)
+
+      this.showFormValid()
     }
   }
 
   onToggleChange(event) {
-    const { target } = event
+    const {target} = event
     const isRequired = target.required
     const isToggleType = ['radio', 'checkbox'].includes(target.type)
 
@@ -117,36 +123,70 @@ class formValidation {
   //   }
   // }
 
-  // formStatusChange(event) {
-  //   const { target } = event
-  //   const formElement = target.matches(this.selectors.form)
-  //
-  //   if (!isForm || !target) return
-  //
-  //   const requiredFields = [...target.elements].filter(element => element.required)
-  //
-  //   const validFields = requiredFields.filter(field => {
-  //     let isValid = this.validateField(field)
-  //
-  //     if (isValid) {
-  //       return field
-  //     }
-  //   })
-  //
-  //   if (requiredFields.length === validFields.length) {
-  //     target.style.boxShadow = '3px 3px 15px var(--color-green)'
-  //   }
-  // }
+  getRequiredFormFields() {
+    const formElement = document.querySelector(this.selectors.form)
+
+    if (!formElement) return
+
+    return [...formElement.elements].filter(element => element.required)
+  }
+
+  isFieldsEmpty() {
+    const requiredFields = this.getRequiredFormFields()
+    let isAllFieldsEmpty = false
+
+    requiredFields.forEach(field => {
+      if (field.value.length === 0) {
+        isAllFieldsEmpty = true
+      }
+
+      if (field.checked) {
+        isAllFieldsEmpty = false
+      }
+    })
+
+    console.log(isAllFieldsEmpty)
+
+    return isAllFieldsEmpty
+  }
+
+  isAllFieldsValid() {
+    const requiredFields = this.getRequiredFormFields()
+    let onlyOneInvalid = false
+    let isAllFieldsValid = true
+
+    requiredFields.forEach(field => {
+      if (!this.validateField(field)) {
+        onlyOneInvalid = true
+      }
+    })
+
+    if (onlyOneInvalid) isAllFieldsValid = false
+
+    return isAllFieldsValid
+  }
+
+  addStateIsValid() {
+    const formElement = document.querySelector(this.selectors.form)
+
+    if (!formElement) return
+
+    formElement.classList.add(this.stateClasses.isValid)
+  }
+
+  showFormValid() {
+    if (!this.isFieldsEmpty() && this.isAllFieldsValid()) {
+      this.addStateIsValid()
+    }
+  }
 
   onSubmit(event) {
-    const { target } = event
+    const {target} = event
     const isForm = target.matches(this.selectors.form)
     let isFormValid = true
     let firstInvalidField = null
 
     if (!isForm) return
-
-    event.preventDefault()
 
     const requiredFields = [...target.elements].filter(element => element.required)
 
@@ -162,6 +202,8 @@ class formValidation {
 
     if (!isFormValid) {
       event.preventDefault()
+
+      target.classList.toggle(this.stateClasses.isInvalid)
 
       firstInvalidField.focus()
     }
