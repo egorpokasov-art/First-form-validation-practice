@@ -77,7 +77,7 @@ body {
 
   &.is-valid {
     border-color: var(--color-green);
-    box-shadow: 1px 1px 3px var(--color-light);
+    box-shadow: 1px 1px 3px var(--color-green);
   }
 
   &.is-invalid {

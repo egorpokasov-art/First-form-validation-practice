@@ -27,8 +27,8 @@ class formValidation {
   }
 
   constructor() {
-    this.form = document.querySelector(this.selectors.form)
-    this.passwordInput = document.querySelector(this.selectors.passwordInput)
+    // this.form = document.querySelector(this.selectors.form)
+    // this.passwordInput = document.querySelector(this.selectors.passwordInput)
 
     this.bindEvents()
   }
@@ -104,26 +104,39 @@ class formValidation {
     this.validateField(target)
   }
 
-  onFormStatusChange(event) {
+  inputStatusChange(event) {
     const { target } = event
-    const formElement = target.matches(this.selectors.form)
 
-    if (!isForm || !target) return
+    if (!target) return
 
-    const requiredFields = [...target.elements].filter(element => element.required)
+    if (this.validateField(target)) {
+      // target.style.boxShadow = '1px 1px 3px var(--color-green)'
+      // target.style.borderColor = 'var(--color-green)'
 
-    const validFields = requiredFields.filter(field => {
-      let isValid = this.validateField(field)
-
-      if (isValid) {
-        return field
-      }
-    })
-
-    if (requiredFields.length === validFields.length) {
-      target.style.boxShadow = '3px 3px 15px var(--color-green)'
+      target.classList.add(this.stateClasses.isValid)
     }
   }
+
+  // formStatusChange(event) {
+  //   const { target } = event
+  //   const formElement = target.matches(this.selectors.form)
+  //
+  //   if (!isForm || !target) return
+  //
+  //   const requiredFields = [...target.elements].filter(element => element.required)
+  //
+  //   const validFields = requiredFields.filter(field => {
+  //     let isValid = this.validateField(field)
+  //
+  //     if (isValid) {
+  //       return field
+  //     }
+  //   })
+  //
+  //   if (requiredFields.length === validFields.length) {
+  //     target.style.boxShadow = '3px 3px 15px var(--color-green)'
+  //   }
+  // }
 
   onSubmit(event) {
     const { target } = event
@@ -155,9 +168,17 @@ class formValidation {
   }
 
   bindEvents() {
+    const formElement = document.querySelector(this.selectors.form)
+    const formRequiredElementsList = [...formElement.elements]
+      .filter(element => element.required)
+
+    formRequiredElementsList.forEach(element => {
+        element.addEventListener('input', (event) => this.inputStatusChange(event))
+      })
+
     document.addEventListener('blur', (event) => this.onBlur(event), true)
     document.addEventListener('change', (event) => this.onToggleChange(event))
-    document.addEventListener('change', (event) => this.onFormStatusChange(event))
+    // document.addEventListener('change', (event) => this.formStatusChange(event))
     document.addEventListener('submit', (event) => this.onSubmit(event))
   }
 }
