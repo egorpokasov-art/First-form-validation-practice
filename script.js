@@ -220,7 +220,15 @@ class formValidation {
 
     if (!target || !isForm) return
 
-    // const requiredFields = [...target.elements].filter(element => element.required)
+    const radioGroups = new Set()
+
+    // this.requiredFields.forEach(field => {
+    //   // Для радио-кнопок собираем группы
+    //   if (field.type === 'radio') {
+    //     radioGroups.add(field.name)
+    //     return // пропускаем индивидуальную проверку
+    //   }
+    // })
 
     this.requiredFields.forEach(field => {
       if (!this.validateField(field)) {
