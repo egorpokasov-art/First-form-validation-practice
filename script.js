@@ -26,8 +26,6 @@ class formValidation {
     },
   }
 
-  fieldValidCounter = 0
-
   formValidityState = {
     login: false,
     password: false,
@@ -36,14 +34,9 @@ class formValidation {
   }
 
   constructor() {
-    // this.form = document.querySelector(this.selectors.form)
-    // this.passwordInput = document.querySelector(this.selectors.passwordInput)
-    this.currentFormState = {...this.formValidityState}
-    this.bindEvents()
-  }
+    this.requiredFields = this.getRequiredFormFields()
 
-  resetFormState() {
-    this.currentFormState = {...this.formValidityState}
+    this.bindEvents()
   }
 
   getErrorsList(fieldElement) {
@@ -80,6 +73,8 @@ class formValidation {
   }
 
   validateField(fieldElement) {
+    if (!fieldElement.required) return
+
     const errorMessages = this.getErrorsList(fieldElement)
 
     this.manageErrors(fieldElement, errorMessages)
@@ -99,8 +94,6 @@ class formValidation {
     fieldElement.classList.toggle(this.stateClasses.isInvalid, !isValid && !isEmpty)
 
     fieldElement.ariaInvalid = !isValid
-
-    if (isValid) this.fieldValidCounter += 1
 
     return isValid
   }
@@ -127,43 +120,6 @@ class formValidation {
 
   // -----------------
 
-  isFieldsEmpty() {
-    const requiredFields = this.getRequiredFormFields()
-    let isAllFieldsEmpty = false
-
-    requiredFields.forEach(field => {
-      if (field.value.length === 0) {
-        isAllFieldsEmpty = true
-      }
-
-      if (field.checked) {
-        isAllFieldsEmpty = false
-      }
-    })
-
-    console.log(isAllFieldsEmpty)
-
-    return isAllFieldsEmpty
-  }
-
-  isAllFieldsValid() {
-    const requiredFields = this.getRequiredFormFields()
-    let onlyOneInvalid = false
-    let isAllFieldsValid = true
-
-    requiredFields.forEach(field => {
-      if (!this.validateField(field)) {
-        onlyOneInvalid = true
-      }
-    })
-
-    if (onlyOneInvalid) isAllFieldsValid = false
-
-    return isAllFieldsValid
-  }
-
-  // ---------------------
-
   getRequiredFormFields() {
     const formElement = document.querySelector(this.selectors.form)
 
@@ -172,20 +128,62 @@ class formValidation {
     return [...formElement.elements].filter(element => element.required)
   }
 
+  isAnyFieldsEmpty(fieldElement) {
+    // const requiredFields = this.getRequiredFormFields()
+    let isAnyFieldsEmpty = false
+    const radios = []
+
+    this.requiredFields.forEach(field => {
+      if (field.value.length === 0) {
+        isAnyFieldsEmpty = true
+      }
+
+      if (fieldElement.type === 'radio') {
+        radios.push(fieldElement)
+      }
+
+      if (radios.filter(radio => radio.checked === true).length !== 0) {
+        isAnyFieldsEmpty = false
+      }
+
+      if (fieldElement.type === 'checkbox' && !field.checked) {
+        isAnyFieldsEmpty = true
+      }
+    })
+
+    console.log(`Некоторые элементы пустые? - ${isAnyFieldsEmpty}`)
+
+    return isAnyFieldsEmpty
+  }
+
+  // ---------------------
+
+  clearErrorMessages() {
+    const allFieldErrors = document.querySelectorAll(this.selectors.spanErrors)
+
+    allFieldErrors.forEach(fieldError => fieldError.innerHTML = '')
+  }
+
   changeFormValidityState(fieldElement) {
     const isValid = this.getErrorsList(fieldElement).length === 0
-    const fieldId = fieldElement.id
+    const fieldElementId = fieldElement.id
     const radios = []
 
     if (isValid) {
       Object.keys(this.formValidityState).forEach(key => {
-        if (key === fieldId) {
+        if (key === fieldElementId) {
           this.formValidityState[key] = true
+        }
+      })
+    } else {
+      Object.keys(this.formValidityState).forEach(key => {
+        if (key === fieldElementId) {
+          this.formValidityState[key] = false
         }
       })
     }
 
-    if (fieldId === 'male' || fieldId === 'female') {
+    if (fieldElementId === 'male' || fieldElementId === 'female') {
       radios.push(fieldElement)
     }
 
@@ -197,7 +195,7 @@ class formValidation {
   showFormState(fieldElement) {
     const formElement = document.querySelector(this.selectors.form)
 
-    if (!formElement) return
+    if ( !fieldElement || !formElement) return
 
     this.changeFormValidityState(fieldElement)
 
@@ -205,10 +203,13 @@ class formValidation {
       .filter(value => value === false).length === 0
 
     if (isAllValid) {
-      formElement.classList.toggle(this.stateClasses.isValid)
+      formElement.classList.remove(this.stateClasses.isInvalid)
+      this.clearErrorMessages()
     }
 
-    this.resetFormState()
+    formElement.classList.toggle(this.stateClasses.isValid, isAllValid)
+
+    // console.log('запустился сложный метод')
   }
 
   onSubmit(event) {
@@ -217,11 +218,11 @@ class formValidation {
     let isFormValid = true
     let firstInvalidField = null
 
-    if (!isForm) return
+    if (!target || !isForm) return
 
-    const requiredFields = [...target.elements].filter(element => element.required)
+    // const requiredFields = [...target.elements].filter(element => element.required)
 
-    requiredFields.forEach(field => {
+    this.requiredFields.forEach(field => {
       if (!this.validateField(field)) {
         isFormValid = false
 
