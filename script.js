@@ -38,8 +38,12 @@ class formValidation {
   constructor() {
     // this.form = document.querySelector(this.selectors.form)
     // this.passwordInput = document.querySelector(this.selectors.passwordInput)
-
+    this.currentFormState = {...this.formValidityState}
     this.bindEvents()
+  }
+
+  resetFormState() {
+    this.currentFormState = {...this.formValidityState}
   }
 
   getErrorsList(fieldElement) {
@@ -169,77 +173,42 @@ class formValidation {
   }
 
   changeFormValidityState(fieldElement) {
-    // const formElement = document.querySelector(this.selectors.form)
-    // const fieldPassword = formElement.password
-    // const fieldLogin = formElement.login
-    // const fieldsRadios = formElement.gender
-    // const fieldCheckbox = formElement.agreement
-    //
-    // switch (fieldElement) {
-    //   case fieldPassword: {
-    //     const errorMessages = this.getErrorsList(fieldPassword)
-    //     const isValid = errorMessages.length === 0
-    //
-    //     if (isValid) this.formValidityState.password = true
-    //   }
-    //     break
-    //   case fieldLogin: {
-    //     const errorMessages = this.getErrorsList(fieldLogin)
-    //     const isValid = errorMessages.length === 0
-    //
-    //     if (isValid) this.formValidityState.login = true
-    //   }
-    //     break
-    //   case fieldsRadios: {
-    //     // const errorMessagesMale = this.getErrorsList(fieldsRadios[0])
-    //     // const errorMessagesFemale = this.getErrorsList(fieldsRadios[1])
-    //     // const isValid = errorMessagesMale.length === 0 && errorMessagesFemale.length === 0
-    //
-    //     const isNotChecked = [...fieldsRadios].filter(radio => radio.checked).length === 0
-    //
-    //     if (isNotChecked) this.formValidityState.gender = true
-    //   }
-    //     break
-    //   case fieldCheckbox: {
-    //     const errorMessages = this.getErrorsList(fieldCheckbox)
-    //     const isValid = errorMessages.length === 0
-    //
-    //     if (isValid) this.formValidityState.agreement = true
-    //   }
-    //     break
-    // }
-
     const isValid = this.getErrorsList(fieldElement).length === 0
-    let fieldId = fieldElement.id
-    let radiosId = [...]
+    const fieldId = fieldElement.id
+    const radios = []
 
     if (isValid) {
       Object.keys(this.formValidityState).forEach(key => {
-        if (key === fieldId || key === 'male' || key === 'female') {
+        if (key === fieldId) {
           this.formValidityState[key] = true
         }
       })
     }
+
+    if (fieldId === 'male' || fieldId === 'female') {
+      radios.push(fieldElement)
+    }
+
+    if (radios.filter(radio => radio.checked === true).length !== 0) {
+      this.formValidityState.gender = true
+    }
   }
 
-  addStateIsValid() {
+  showFormState(fieldElement) {
     const formElement = document.querySelector(this.selectors.form)
 
     if (!formElement) return
 
-    formElement.classList.add(this.stateClasses.isValid)
-  }
-
-  showFormValid(fieldElement) {
     this.changeFormValidityState(fieldElement)
 
-    console.log(this.formValidityState)
-
-    const isAllValid = Object.values(this.formValidityState).filter(value => value === false).length === 0
+    const isAllValid = Object.values(this.formValidityState)
+      .filter(value => value === false).length === 0
 
     if (isAllValid) {
-      this.addStateIsValid()
+      formElement.classList.toggle(this.stateClasses.isValid)
     }
+
+    this.resetFormState()
   }
 
   onSubmit(event) {
@@ -275,7 +244,7 @@ class formValidation {
     const requiredFields = this.getRequiredFormFields()
 
     requiredFields.forEach(field => {
-      field.addEventListener('input', (event) => this.showFormValid(event.target))
+      field.addEventListener('input', (event) => this.showFormState(event.target))
     })
 
     document.addEventListener('blur', (event) => this.onBlur(event), true)
