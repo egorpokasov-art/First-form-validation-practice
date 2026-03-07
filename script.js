@@ -28,11 +28,36 @@ class formValidation {
 
   fieldValidCounter = 0
 
+  formValidityState = {
+    login: false,
+    password: false,
+    gender: false,
+    agreement: false,
+  }
+
   constructor() {
     // this.form = document.querySelector(this.selectors.form)
     // this.passwordInput = document.querySelector(this.selectors.passwordInput)
 
     this.bindEvents()
+  }
+
+  getErrorsList(fieldElement) {
+    const isRequired = fieldElement.required
+
+    if (!fieldElement || !isRequired) return;
+
+    const validityState = fieldElement.validity
+    const errors = Object.entries(this.errorMessages)
+    const errorMessages = []
+
+    errors.forEach(([errorType, errorMessage]) => {
+      if (validityState[errorType]) {
+        errorMessages.push(errorMessage(fieldElement))
+      }
+    })
+
+    return errorMessages
   }
 
   manageErrors(fieldElement, errorMessages) {
@@ -51,19 +76,7 @@ class formValidation {
   }
 
   validateField(fieldElement) {
-    const isRequired = fieldElement.required
-
-    if (!fieldElement || !isRequired) return;
-
-    const validityState = fieldElement.validity
-    const errors = Object.entries(this.errorMessages)
-    const errorMessages = []
-
-    errors.forEach(([errorType, errorMessage]) => {
-      if (validityState[errorType]) {
-        errorMessages.push(errorMessage(fieldElement))
-      }
-    })
+    const errorMessages = this.getErrorsList(fieldElement)
 
     this.manageErrors(fieldElement, errorMessages)
 
@@ -95,8 +108,6 @@ class formValidation {
 
     if (target && isRequired && isFormField) {
       this.validateField(target)
-
-      this.showFormValid()
     }
   }
 
@@ -110,26 +121,7 @@ class formValidation {
     this.validateField(target)
   }
 
-  // inputStatusChange(event) {
-  //   const { target } = event
-  //
-  //   if (!target) return
-  //
-  //   if (this.validateField(target)) {
-  //     target.style.boxShadow = '1px 1px 3px var(--color-green)'
-  //     target.style.borderColor = 'var(--color-green)'
-  //
-  //     // target.classList.add(this.stateClasses.isValid)
-  //   }
-  // }
-
-  getRequiredFormFields() {
-    const formElement = document.querySelector(this.selectors.form)
-
-    if (!formElement) return
-
-    return [...formElement.elements].filter(element => element.required)
-  }
+  // -----------------
 
   isFieldsEmpty() {
     const requiredFields = this.getRequiredFormFields()
@@ -166,6 +158,70 @@ class formValidation {
     return isAllFieldsValid
   }
 
+  // ---------------------
+
+  getRequiredFormFields() {
+    const formElement = document.querySelector(this.selectors.form)
+
+    if (!formElement) return
+
+    return [...formElement.elements].filter(element => element.required)
+  }
+
+  changeFormValidityState(fieldElement) {
+    // const formElement = document.querySelector(this.selectors.form)
+    // const fieldPassword = formElement.password
+    // const fieldLogin = formElement.login
+    // const fieldsRadios = formElement.gender
+    // const fieldCheckbox = formElement.agreement
+    //
+    // switch (fieldElement) {
+    //   case fieldPassword: {
+    //     const errorMessages = this.getErrorsList(fieldPassword)
+    //     const isValid = errorMessages.length === 0
+    //
+    //     if (isValid) this.formValidityState.password = true
+    //   }
+    //     break
+    //   case fieldLogin: {
+    //     const errorMessages = this.getErrorsList(fieldLogin)
+    //     const isValid = errorMessages.length === 0
+    //
+    //     if (isValid) this.formValidityState.login = true
+    //   }
+    //     break
+    //   case fieldsRadios: {
+    //     // const errorMessagesMale = this.getErrorsList(fieldsRadios[0])
+    //     // const errorMessagesFemale = this.getErrorsList(fieldsRadios[1])
+    //     // const isValid = errorMessagesMale.length === 0 && errorMessagesFemale.length === 0
+    //
+    //     const isNotChecked = [...fieldsRadios].filter(radio => radio.checked).length === 0
+    //
+    //     if (isNotChecked) this.formValidityState.gender = true
+    //   }
+    //     break
+    //   case fieldCheckbox: {
+    //     const errorMessages = this.getErrorsList(fieldCheckbox)
+    //     const isValid = errorMessages.length === 0
+    //
+    //     if (isValid) this.formValidityState.agreement = true
+    //   }
+    //     break
+    // }
+
+    const isValid = this.getErrorsList(fieldElement).length === 0
+    let fieldId = fieldElement.id
+    let radiosId = [...]
+
+    if (isValid) {
+      Object.keys(this.formValidityState).forEach(key => {
+        if (key === fieldId || key === 'male' || key === 'female') {
+          this.formValidityState[key] = true
+        }
+      })
+    }
+  }
+
   addStateIsValid() {
     const formElement = document.querySelector(this.selectors.form)
 
@@ -174,8 +230,14 @@ class formValidation {
     formElement.classList.add(this.stateClasses.isValid)
   }
 
-  showFormValid() {
-    if (!this.isFieldsEmpty() && this.isAllFieldsValid()) {
+  showFormValid(fieldElement) {
+    this.changeFormValidityState(fieldElement)
+
+    console.log(this.formValidityState)
+
+    const isAllValid = Object.values(this.formValidityState).filter(value => value === false).length === 0
+
+    if (isAllValid) {
       this.addStateIsValid()
     }
   }
@@ -210,16 +272,14 @@ class formValidation {
   }
 
   bindEvents() {
-    // const formElement = document.querySelector(this.selectors.form)
-    // const formRequiredElementsList = [...formElement.elements].filter(element => element.required)
-    //
-    // formRequiredElementsList.forEach(element => {
-    //     element.addEventListener('input', (event) => this.inputStatusChange(event))
-    //   })
+    const requiredFields = this.getRequiredFormFields()
+
+    requiredFields.forEach(field => {
+      field.addEventListener('input', (event) => this.showFormValid(event.target))
+    })
 
     document.addEventListener('blur', (event) => this.onBlur(event), true)
     document.addEventListener('change', (event) => this.onToggleChange(event))
-    // document.addEventListener('change', (event) => this.formStatusChange(event))
     document.addEventListener('submit', (event) => this.onSubmit(event))
   }
 }
