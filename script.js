@@ -221,6 +221,9 @@ class formValidation {
     if (isAllValid) {
       formElement.classList.remove(this.stateClasses.isInvalid)
       this.clearErrorMessages()
+      this.requiredFields.forEach(field => {
+        field.parentElement.classList.remove(this.stateClasses.isRequired)
+      })
     }
 
     formElement.classList.toggle(this.stateClasses.isValid, isAllValid)
