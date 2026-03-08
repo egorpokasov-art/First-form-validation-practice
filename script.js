@@ -33,6 +33,14 @@ class formValidation {
     agreement: false,
   }
 
+  getRequiredFormFields() {
+    const formElement = document.querySelector(this.selectors.form)
+
+    if (!formElement) return
+
+    return [...formElement.elements].filter(element => element.required)
+  }
+
   constructor() {
     this.requiredFields = this.getRequiredFormFields()
     this.bindEvents()
@@ -138,14 +146,6 @@ class formValidation {
 
   // -----------------
 
-  getRequiredFormFields() {
-    const formElement = document.querySelector(this.selectors.form)
-
-    if (!formElement) return
-
-    return [...formElement.elements].filter(element => element.required)
-  }
-
   isAnyFieldsEmpty() {
     let isAnyFieldsEmpty = false
 
@@ -176,40 +176,44 @@ class formValidation {
     allFieldErrors.forEach(fieldError => fieldError.innerHTML = '')
   }
 
-  changeFormValidityState(fieldElement) {
-    const isValid = this.getErrorsList(fieldElement).length === 0
-    const fieldElementId = fieldElement.id
-    const radios = []
+  changeFormValidityState() {
+    this.requiredFields.forEach(field => {
+      const isValid = this.getErrorsList(field).length === 0
+      const fieldId = field.id
 
-    if (isValid) {
-      Object.keys(this.formValidityState).forEach(key => {
-        if (key === fieldElementId) {
-          this.formValidityState[key] = true
-        }
-      })
-    } else {
-      Object.keys(this.formValidityState).forEach(key => {
-        if (key === fieldElementId) {
-          this.formValidityState[key] = false
-        }
-      })
-    }
+      if (isValid) {
+        Object.keys(this.formValidityState).forEach(key => {
+          if (key === fieldId) {
+            this.formValidityState[key] = true
+          }
+        })
+      } else {
+        Object.keys(this.formValidityState).forEach(key => {
+          if (key === fieldId) {
+            this.formValidityState[key] = false
+          }
+        })
+      }
 
-    if (fieldElementId === 'male' || fieldElementId === 'female') {
-      radios.push(fieldElement)
-    }
-
-    if (radios.filter(radio => radio.checked === true).length !== 0) {
-      this.formValidityState.gender = true
-    }
+      if (this.isRadioChecked()) {
+        this.formValidityState.gender = true
+      }
+    })
   }
 
   showFormState(fieldElement) {
     const formElement = document.querySelector(this.selectors.form)
 
-    if (this.isAnyFieldsEmpty() || !fieldElement || !formElement) return
+    if (!fieldElement || !formElement) return
 
-    this.changeFormValidityState(fieldElement)
+    const isFieldsAlreadyValid = Object.values(this.formValidityState)
+      .every(stateField => stateField === true)
+
+    if (!isFieldsAlreadyValid) {
+      this.isAnyFieldsEmpty()
+    }
+
+    this.changeFormValidityState()
 
     const isAllValid = Object.values(this.formValidityState)
       .filter(value => value === false).length === 0
