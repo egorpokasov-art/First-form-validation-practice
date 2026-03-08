@@ -85,6 +85,11 @@ body {
     border-color: var(--color-red);
     box-shadow: 1px 1px 3px var(--color-red);
   }
+
+  /*&::placeholder {*/
+  /*  font-size: 17px;*/
+  /*  color: var(--color-light-gray);*/
+  /*}*/
 }
 
 .form__field-errors,
@@ -296,7 +301,7 @@ button {
     content: '*';
     position: absolute;
     z-index: 100;
-    top: -3px;
+    top: -4px;
     left: -5px;
     color: var(--color-red);
   }
@@ -346,8 +351,8 @@ button {
 
   &:hover {
     border: none;
-    background-color: var(--color-light-gray);
     box-shadow: none;
+    opacity: 0.75;
   }
 
   &:focus {

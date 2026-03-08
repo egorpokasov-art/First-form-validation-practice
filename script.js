@@ -21,7 +21,7 @@ class formValidation {
     tooLong: ({maxLength}) => `Максимальное количество вводимых символов - ${maxLength}`,
     tooShort: ({minLength, type}) => {
       return type === 'password' ?
-        `Пароль должен содержать не менее ${minLength} символов.` :
+        `Минимальная длина пароля - ${minLength} символов.` :
         `Минимальная длина логина не менее ${minLength} символов.`
     },
   }
@@ -144,8 +144,6 @@ class formValidation {
     this.validateField(target)
   }
 
-  // -----------------
-
   isAnyFieldsEmpty() {
     let isAnyFieldsEmpty = false
 
@@ -163,12 +161,8 @@ class formValidation {
       }
     })
 
-    console.log('Проверка')
-
     return isAnyFieldsEmpty
   }
-
-  // ---------------------
 
   clearErrorMessages() {
     const allFieldErrors = document.querySelectorAll(this.selectors.spanErrors)
@@ -227,10 +221,6 @@ class formValidation {
     }
 
     formElement.classList.toggle(this.stateClasses.isValid, isAllValid)
-
-    console.log('запустился сложный метод')
-    console.log(this.formValidityState)
-    console.log(isAllValid)
   }
 
   onSubmit(event) {
@@ -240,16 +230,6 @@ class formValidation {
     let firstInvalidField = null
 
     if (!target || !isForm) return
-
-    const radioGroups = new Set()
-
-    // this.requiredFields.forEach(field => {
-    //   // Для радио-кнопок собираем группы
-    //   if (field.type === 'radio') {
-    //     radioGroups.add(field.name)
-    //     return // пропускаем индивидуальную проверку
-    //   }
-    // })
 
     this.requiredFields.forEach(field => {
       if (!this.validateField(field)) {
@@ -267,6 +247,8 @@ class formValidation {
       target.classList.toggle(this.stateClasses.isInvalid)
 
       firstInvalidField.focus()
+    } else {
+      return true
     }
   }
 
@@ -281,6 +263,21 @@ class formValidation {
     document.addEventListener('change', (event) => this.onToggleChange(event))
     document.addEventListener('submit', (event) => this.onSubmit(event))
   }
+
+  // -----------
+
+  // method() {
+  //   const observer = new MutationObserver(fieldsList => {
+  //
+  //   })
+  //
+  //
+  //
+  //   const fieldsList = this.requiredFields
+  //     .filter(field => field.type !== 'radios' && field.type !== 'checkbox')
+  //
+  //   fieldsList.forEach(field => observer.observe(field, { attributes: true }))
+  // }
 }
 
 new formValidation()
