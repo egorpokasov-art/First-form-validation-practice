@@ -35,8 +35,15 @@ class formValidation {
 
   constructor() {
     this.requiredFields = this.getRequiredFormFields()
-
     this.bindEvents()
+  }
+
+  isRadioChecked() {
+    const formElement = document.querySelector(this.selectors.form)
+
+    if (!formElement) return
+
+    return [...formElement.gender].filter(radio => radio.checked).length !== 0
   }
 
   getErrorsList(fieldElement) {
@@ -47,12 +54,23 @@ class formValidation {
     const validityState = fieldElement.validity
     const errors = Object.entries(this.errorMessages)
     const errorMessages = []
+    let isRadioValid = false
 
-    errors.forEach(([errorType, errorMessage]) => {
-      if (validityState[errorType]) {
-        errorMessages.push(errorMessage(fieldElement))
+    if (fieldElement.type === 'radio') {
+      isRadioValid = this.isRadioChecked()
+
+      if (isRadioValid) {
+        errorMessages.length = 0
+      } else {
+        errorMessages.push(this.errorMessages.valueMissing())
       }
-    })
+    } else {
+      errors.forEach(([errorType, errorMessage]) => {
+        if (validityState[errorType]) {
+          errorMessages.push(errorMessage(fieldElement))
+        }
+      })
+    }
 
     return errorMessages
   }
@@ -128,30 +146,24 @@ class formValidation {
     return [...formElement.elements].filter(element => element.required)
   }
 
-  isAnyFieldsEmpty(fieldElement) {
-    // const requiredFields = this.getRequiredFormFields()
+  isAnyFieldsEmpty() {
     let isAnyFieldsEmpty = false
-    const radios = []
 
     this.requiredFields.forEach(field => {
       if (field.value.length === 0) {
         isAnyFieldsEmpty = true
       }
 
-      if (fieldElement.type === 'radio') {
-        radios.push(fieldElement)
-      }
-
-      if (radios.filter(radio => radio.checked === true).length !== 0) {
+      if (this.isRadioChecked()) {
         isAnyFieldsEmpty = false
       }
 
-      if (fieldElement.type === 'checkbox' && !field.checked) {
+      if (field.type === 'checkbox' && !field.checked) {
         isAnyFieldsEmpty = true
       }
     })
 
-    console.log(`Некоторые элементы пустые? - ${isAnyFieldsEmpty}`)
+    console.log('Проверка')
 
     return isAnyFieldsEmpty
   }
@@ -195,7 +207,7 @@ class formValidation {
   showFormState(fieldElement) {
     const formElement = document.querySelector(this.selectors.form)
 
-    if ( !fieldElement || !formElement) return
+    if (this.isAnyFieldsEmpty() || !fieldElement || !formElement) return
 
     this.changeFormValidityState(fieldElement)
 
@@ -209,7 +221,9 @@ class formValidation {
 
     formElement.classList.toggle(this.stateClasses.isValid, isAllValid)
 
-    // console.log('запустился сложный метод')
+    console.log('запустился сложный метод')
+    console.log(this.formValidityState)
+    console.log(isAllValid)
   }
 
   onSubmit(event) {
