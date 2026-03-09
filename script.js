@@ -33,25 +33,17 @@ class formValidation {
     agreement: false,
   }
 
-  getRequiredFormFields() {
-    const formElement = document.querySelector(this.selectors.form)
-
-    if (!formElement) return
-
-    return [...formElement.elements].filter(element => element.required)
-  }
-
   constructor() {
-    this.requiredFields = this.getRequiredFormFields()
+    this.form = document.querySelector(this.selectors.form)
+    this.fieldErrors = document.querySelectorAll(this.selectors.spanErrors)
+    this.requiredFields = [...this.form.elements].filter(element => element.required)
     this.bindEvents()
   }
 
   isRadioChecked() {
-    const formElement = document.querySelector(this.selectors.form)
+    if (!this.form) return
 
-    if (!formElement) return
-
-    return [...formElement.gender].filter(radio => radio.checked).length !== 0
+    return [...this.form.gender].some(radio => radio.checked)
   }
 
   getErrorsList(fieldElement) {
@@ -144,83 +136,71 @@ class formValidation {
     this.validateField(target)
   }
 
-  isAnyFieldsEmpty() {
-    let isAnyFieldsEmpty = false
-
-    this.requiredFields.forEach(field => {
-      if (field.value.length === 0) {
-        isAnyFieldsEmpty = true
-      }
-
-      if (this.isRadioChecked()) {
-        isAnyFieldsEmpty = false
-      }
-
-      if (field.type === 'checkbox' && !field.checked) {
-        isAnyFieldsEmpty = true
-      }
-    })
-
-    return isAnyFieldsEmpty
+  isLeasOneFieldEmpty() {
+    console.log('Проверка')
+    return this.requiredFields.some(field => field.validity.valueMissing === true)
   }
 
   clearErrorMessages() {
-    const allFieldErrors = document.querySelectorAll(this.selectors.spanErrors)
-
-    allFieldErrors.forEach(fieldError => fieldError.innerHTML = '')
+    this.fieldErrors.forEach(fieldError => fieldError.innerHTML = '')
   }
 
-  changeFormValidityState() {
+  uploadFormValidityState() {
     this.requiredFields.forEach(field => {
       const isValid = this.getErrorsList(field).length === 0
       const fieldId = field.id
 
-      if (isValid) {
-        Object.keys(this.formValidityState).forEach(key => {
+      Object.keys(this.formValidityState).forEach(key => {
+        if (isValid) {
           if (key === fieldId) {
             this.formValidityState[key] = true
           }
-        })
-      } else {
-        Object.keys(this.formValidityState).forEach(key => {
+        } else {
           if (key === fieldId) {
             this.formValidityState[key] = false
           }
-        })
-      }
-
-      if (this.isRadioChecked()) {
-        this.formValidityState.gender = true
-      }
+        }
+      })
     })
+
+    this.isRadioChecked() ?
+      this.formValidityState.gender = true :
+      this.formValidityState.gender = false
+
+    const isAllValid = Object.values(this.formValidityState)
+      .every(value => value === true)
+
+    return isAllValid
   }
 
-  showFormState(fieldElement) {
-    const formElement = document.querySelector(this.selectors.form)
+  showFormState() {
+    if (!this.form) return
 
-    if (!fieldElement || !formElement) return
+    this.form.classList.remove(this.stateClasses.isInvalid)
+    this.clearErrorMessages()
+    this.requiredFields.forEach(field => {
+      field.parentElement.classList.remove(this.stateClasses.isRequired)
+    })
 
+    console.log('Запустился сложный метод')
+  }
+
+  toggleFormState() {
     const isFieldsAlreadyValid = Object.values(this.formValidityState)
       .every(stateField => stateField === true)
 
     if (!isFieldsAlreadyValid) {
-      this.isAnyFieldsEmpty()
+      if (this.isLeasOneFieldEmpty()) return
     }
 
-    this.changeFormValidityState()
+    let areAllValid = this.uploadFormValidityState()
 
-    const isAllValid = Object.values(this.formValidityState)
-      .filter(value => value === false).length === 0
-
-    if (isAllValid) {
-      formElement.classList.remove(this.stateClasses.isInvalid)
-      this.clearErrorMessages()
-      this.requiredFields.forEach(field => {
-        field.parentElement.classList.remove(this.stateClasses.isRequired)
-      })
+    if (areAllValid) {
+      this.showFormState()
     }
 
-    formElement.classList.toggle(this.stateClasses.isValid, isAllValid)
+    this.form.classList.toggle(this.stateClasses.isValid, areAllValid)
+
   }
 
   onSubmit(event) {
@@ -253,31 +233,13 @@ class formValidation {
   }
 
   bindEvents() {
-    const requiredFields = this.getRequiredFormFields()
-
-    requiredFields.forEach(field => {
-      field.addEventListener('input', (event) => this.showFormState(event.target))
+    this.requiredFields.forEach(field => {
+      field.addEventListener('input', () => this.toggleFormState())
     })
-
     document.addEventListener('blur', (event) => this.onBlur(event), true)
     document.addEventListener('change', (event) => this.onToggleChange(event))
     document.addEventListener('submit', (event) => this.onSubmit(event))
   }
-
-  // -----------
-
-  // method() {
-  //   const observer = new MutationObserver(fieldsList => {
-  //
-  //   })
-  //
-  //
-  //
-  //   const fieldsList = this.requiredFields
-  //     .filter(field => field.type !== 'radios' && field.type !== 'checkbox')
-  //
-  //   fieldsList.forEach(field => observer.observe(field, { attributes: true }))
-  // }
 }
 
 new formValidation()
