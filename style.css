@@ -28,7 +28,7 @@
 }
 
 body {
-  height: 100vh;
+  /*height: 100vh;*/
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -387,4 +387,28 @@ input:not(.form__radios-input, .form__checkbox-input),
   outline: none;
   border: 2px solid var(--color-light);
   box-shadow: 2px 2px 4px var(--color-light-gray);
+}
+
+.regForm-pop-up {
+  width: 550px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  padding: 15px;
+  margin-bottom: 40px;
+
+  text-align: center;
+
+  border: 2px solid var(--color-light);
+  border-radius: 25px;
+
+  .regForm-pop-up__title {
+    font-size: 40px;
+  }
+
+  .regForm-pop-up__success-icon {
+  }
 }

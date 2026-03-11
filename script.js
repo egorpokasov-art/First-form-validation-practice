@@ -1,4 +1,4 @@
-class formValidation {
+class FormValidation {
   selectors = {
     form: '[data-js-form]',
     spanErrors: '[data-js-errors]',
@@ -242,4 +242,8 @@ class formValidation {
   }
 }
 
-new formValidation()
+new FormValidation()
+
+class FormRegPopUp {
+
+}
