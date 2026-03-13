@@ -28,7 +28,8 @@
 }
 
 body {
-  /*height: 100vh;*/
+  height: 100vh;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -52,6 +53,10 @@ body {
   clip-path: inset(100%);
   clip: rect(0 0 0 0);
   overflow: hidden;
+}
+
+.hide {
+  display: none;
 }
 
 .input {
@@ -140,6 +145,7 @@ button {
   border-radius: var(--border-radius-form);
   box-shadow: 3px 3px 15px var(--color-light);
   padding: 30px;
+  margin-top: 40px;
 
   &.is-valid {
     border-color: var(--color-green);
@@ -390,23 +396,58 @@ input:not(.form__radios-input, .form__checkbox-input),
 }
 
 .regForm-pop-up {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
   width: 550px;
   height: 300px;
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   row-gap: 20px;
+  text-align: center;
+  border: 2px solid var(--color-light);
+  border-radius: 25px;
+  background-color: var(--bg-color-dark);
   padding: 15px;
   margin-bottom: 40px;
 
-  text-align: center;
+  /*&[open] {*/
+  /*  display: flex;*/
+  /*}*/
 
-  border: 2px solid var(--color-light);
-  border-radius: 25px;
+  /*&:not([open]) {*/
+  /*  display: none;*/
+  /*}*/
+
+  .regForm-pop-up__close-button-wrapper {
+    position: relative;
+    width: 100%;
+
+    .regForm-pop-up__close-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      aspect-ratio: 1;
+      position: absolute;
+      top: -10px;
+      right: 0;
+      background-color: transparent;
+      border: none;
+      border-radius: var(--border-radius);
+
+      &:hover {
+        background-color: var(--color-gray);
+      }
+    }
+  }
 
   .regForm-pop-up__title {
     font-size: 40px;
+    color: var(--color-light);
+    user-select: none;
   }
 
   .regForm-pop-up__success-icon {

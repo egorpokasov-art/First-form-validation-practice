@@ -2,7 +2,8 @@ class FormValidation {
   selectors = {
     form: '[data-js-form]',
     spanErrors: '[data-js-errors]',
-    passwordInput: '[data-js-password-input]',
+    popUp: '[data-js-regForm-pop-up]',
+    popUpCloseButton: '[data-js-popUp-button-close]',
   }
 
   stateClasses = {
@@ -11,7 +12,7 @@ class FormValidation {
     isRequired: 'is-required',
   }
 
-  setClasses = {
+  visualClasses = {
     errorSpan: 'field__error',
   }
 
@@ -37,6 +38,8 @@ class FormValidation {
     this.form = document.querySelector(this.selectors.form)
     this.fieldErrors = document.querySelectorAll(this.selectors.spanErrors)
     this.requiredFields = [...this.form.elements].filter(element => element.required)
+    this.popUp = document.querySelector(this.selectors.popUp)
+    this.popUpCloseButton = document.querySelector(this.selectors.popUpCloseButton)
     this.bindEvents()
   }
 
@@ -49,28 +52,16 @@ class FormValidation {
   getErrorsList(fieldElement) {
     const isRequired = fieldElement.required
 
-    if (!fieldElement || !isRequired) return;
+    if (!fieldElement || !isRequired) return []
 
     const validityState = fieldElement.validity
-    const errors = Object.entries(this.errorMessages)
     const errorMessages = []
-    let isRadioValid = false
 
-    if (fieldElement.type === 'radio') {
-      isRadioValid = this.isRadioChecked()
-
-      if (isRadioValid) {
-        errorMessages.length = 0
-      } else {
-        errorMessages.push(this.errorMessages.valueMissing())
+    Object.entries(this.errorMessages).forEach(([errorType, errorMessage]) => {
+      if (validityState[errorType]) {
+        errorMessages.push(errorMessage(fieldElement))
       }
-    } else {
-      errors.forEach(([errorType, errorMessage]) => {
-        if (validityState[errorType]) {
-          errorMessages.push(errorMessage(fieldElement))
-        }
-      })
-    }
+    })
 
     return errorMessages
   }
@@ -84,28 +75,31 @@ class FormValidation {
 
     errorMessages.forEach((message) => {
       const newErrorElement = document.createElement('span')
-      newErrorElement.classList.add(this.setClasses.errorSpan)
+      newErrorElement.classList.add(this.visualClasses.errorSpan)
       newErrorElement.textContent = message
       fieldErrorsElement.append(newErrorElement)
     })
   }
 
   validateField(fieldElement) {
-    if (!fieldElement.required) return
-
     const errorMessages = this.getErrorsList(fieldElement)
 
     this.manageErrors(fieldElement, errorMessages)
 
     const isValid = errorMessages.length === 0
-    const isEmpty = fieldElement.value.length === 0
+    let isEmpty = fieldElement.value.length === 0
+
     const isToggleType = ['radio', 'checkbox'].includes(fieldElement.type)
 
-    if (isToggleType) {
-      const isChecked = fieldElement.checked
+    if (fieldElement.type === 'radio') {
+      fieldElement.parentElement.classList.toggle(this.stateClasses.isRequired, !this.isRadioChecked())
+    }
 
-      fieldElement.parentElement.classList.toggle(this.stateClasses.isRequired, !isChecked)
-    } else {
+    if (fieldElement.type === 'checkbox') {
+      fieldElement.parentElement.classList.toggle(this.stateClasses.isRequired, !fieldElement.checked)
+    }
+
+    if (!isToggleType) {
       fieldElement.parentElement.classList.toggle(this.stateClasses.isRequired, isEmpty)
     }
 
@@ -145,32 +139,22 @@ class FormValidation {
     this.fieldErrors.forEach(fieldError => fieldError.innerHTML = '')
   }
 
-  uploadFormValidityState() {
+  updateFormValidityState() {
     this.requiredFields.forEach(field => {
       const isValid = this.getErrorsList(field).length === 0
       const fieldId = field.id
 
-      Object.keys(this.formValidityState).forEach(key => {
-        if (isValid) {
-          if (key === fieldId) {
-            this.formValidityState[key] = true
-          }
-        } else {
-          if (key === fieldId) {
-            this.formValidityState[key] = false
-          }
-        }
-      })
+      if (fieldId in this.formValidityState) {
+        this.formValidityState[fieldId] = isValid
+      }
     })
 
     this.isRadioChecked() ?
       this.formValidityState.gender = true :
       this.formValidityState.gender = false
 
-    const isAllValid = Object.values(this.formValidityState)
-      .every(value => value === true)
 
-    return isAllValid
+    return  Object.values(this.formValidityState).every(value => value === true)
   }
 
   showFormState() {
@@ -193,7 +177,7 @@ class FormValidation {
       if (this.isLeasOneFieldEmpty()) return
     }
 
-    let areAllValid = this.uploadFormValidityState()
+    let areAllValid = this.updateFormValidityState()
 
     if (areAllValid) {
       this.showFormState()
@@ -228,7 +212,8 @@ class FormValidation {
 
       firstInvalidField.focus()
     } else {
-      return true
+      this.form.style.display = 'none'
+      this.popUp.showModal()
     }
   }
 
@@ -239,11 +224,9 @@ class FormValidation {
     document.addEventListener('blur', (event) => this.onBlur(event), true)
     document.addEventListener('change', (event) => this.onToggleChange(event))
     document.addEventListener('submit', (event) => this.onSubmit(event))
+    this.popUpCloseButton.addEventListener('click', () => this.popUp.close())
   }
 }
 
 new FormValidation()
 
-class FormRegPopUp {
-
-}

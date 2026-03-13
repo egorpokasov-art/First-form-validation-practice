@@ -169,16 +169,43 @@
   </button>
 </form>
 
-<div class="regForm-pop-up">
+<dialog class="regForm-pop-up" data-js-regForm-pop-up>
+  <form
+    method="dialog"
+    class="regForm-pop-up__close-button-wrapper"
+  >
+    <button
+      class="regForm-pop-up__close-button"
+      type="submit"
+      data-js-popUp-button-close
+    >
+      <svg
+        class="close-button__icon"
+        width="30"
+        height="30"
+        viewBox="0 0 24 24"
+        fill="#fff"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M19 5L5 19M5 5L9.5 9.5M12 12L19 19"
+          stroke="#fff"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+  </form>
   <h2 class="regForm-pop-up__title">Вы успешно зарегистрировались!</h2>
   <img
     class="regForm-pop-up__success-icon"
     src="./icons/regForm-icons/success-svgrepo-com.svg"
     alt=""
-    wigth="110"
-    height="110"
+    wigth="100"
+    height="100"
     loading="lazy"
   />
-</div>
+</dialog>
 </body>
 </html>
