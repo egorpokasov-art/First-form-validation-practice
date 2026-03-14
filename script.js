@@ -237,7 +237,7 @@ class ShowPassword {
   }
 
   stateClasses = {
-    isActive: 'is-active',
+    isVisible: 'is-visible',
   }
 
   constructor() {
@@ -269,7 +269,7 @@ class ShowPassword {
   }
 
   onDesktop(event) {
-    if (this.windowWidth < 768) {
+    if (this.windowWidth > 768) {
       this.showPasswordDesktop(event)
     }
   }
@@ -277,7 +277,13 @@ class ShowPassword {
   showPasswordMobile() {
     if (!this.fieldPassword) return
 
-    this.showPasswordButton.classList.toggle(this.stateClasses.isActive)
+    this.showPasswordButton.classList.toggle(this.stateClasses.isVisible)
+
+    const isVisible = this.showPasswordButton.classList.contains(this.stateClasses.isVisible)
+
+    isVisible ?
+      this.fieldPassword.type = 'text' :
+      this.fieldPassword.type = 'password'
   }
 
   onMobile() {
@@ -285,7 +291,6 @@ class ShowPassword {
       this.showPasswordMobile()
     }
   }
-
 
   bindEvents() {
     this.showPasswordButton.addEventListener('pointerdown', (event) => this.onDesktop(event))
