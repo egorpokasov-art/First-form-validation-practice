@@ -236,10 +236,18 @@ class ShowPassword {
     showPasswordButton: '[data-js-show-password-button]',
   }
 
+  stateClasses = {
+    isActive: 'is-active',
+  }
+
   constructor() {
     this.showPasswordButton = document.querySelector(this.selectors.showPasswordButton)
     this.fieldPassword = document.querySelector(this.selectors.fieldPassword)
     this.bindEvents()
+  }
+
+  get windowWidth() {
+    return window.innerWidth
   }
 
   onPointerLeave = () => {
@@ -247,7 +255,7 @@ class ShowPassword {
     this.showPasswordButton.removeEventListener('pointerleave', this.onPointerLeave)
   }
 
-  showPassword(event) {
+  showPasswordDesktop(event) {
     if (!this.fieldPassword) return
 
     if (event.type === 'pointerdown') {
@@ -260,10 +268,29 @@ class ShowPassword {
     }
   }
 
+  onDesktop(event) {
+    if (this.windowWidth < 768) {
+      this.showPasswordDesktop(event)
+    }
+  }
+
+  showPasswordMobile() {
+    if (!this.fieldPassword) return
+
+    this.showPasswordButton.classList.toggle(this.stateClasses.isActive)
+  }
+
+  onMobile() {
+    if (this.windowWidth < 768) {
+      this.showPasswordMobile()
+    }
+  }
+
 
   bindEvents() {
-    this.showPasswordButton.addEventListener('pointerdown', (event) => this.showPassword(event))
-    this.showPasswordButton.addEventListener('pointerup', (event) => this.showPassword(event))
+    this.showPasswordButton.addEventListener('pointerdown', (event) => this.onDesktop(event))
+    this.showPasswordButton.addEventListener('pointerup', (event) => this.onDesktop(event))
+    this.showPasswordButton.addEventListener('click', () => this.onMobile())
   }
 }
 
