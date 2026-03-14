@@ -154,7 +154,7 @@ class FormValidation {
       this.formValidityState.gender = false
 
 
-    return  Object.values(this.formValidityState).every(value => value === true)
+    return Object.values(this.formValidityState).every(value => value === true)
   }
 
   showFormState() {
@@ -230,3 +230,41 @@ class FormValidation {
 
 new FormValidation()
 
+class ShowPassword {
+  selectors = {
+    fieldPassword: '[data-js-password-input]',
+    showPasswordButton: '[data-js-show-password-button]',
+  }
+
+  constructor() {
+    this.showPasswordButton = document.querySelector(this.selectors.showPasswordButton)
+    this.fieldPassword = document.querySelector(this.selectors.fieldPassword)
+    this.bindEvents()
+  }
+
+  onPointerLeave = () => {
+    this.fieldPassword.type = 'password'
+    this.showPasswordButton.removeEventListener('pointerleave', this.onPointerLeave)
+  }
+
+  showPassword(event) {
+    if (!this.fieldPassword) return
+
+    if (event.type === 'pointerdown') {
+      this.fieldPassword.type = 'text'
+      this.showPasswordButton.addEventListener('pointerleave', this.onPointerLeave)
+    }
+
+    if (event.type === 'pointerup') {
+      this.fieldPassword.type = 'password'
+    }
+  }
+
+
+  bindEvents() {
+    this.showPasswordButton.addEventListener('pointerdown', (event) => this.showPassword(event))
+    this.showPasswordButton.addEventListener('pointerup', (event) => this.showPassword(event))
+  }
+}
+
+new ShowPassword()
