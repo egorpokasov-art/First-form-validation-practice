@@ -180,7 +180,7 @@ button {
 .textarea__emulator.input {
   position: relative;
   height: auto;
-  padding: 10px 10px;
+  padding: 12px 10px 10px;
 
   textarea.hidden {
     width: 100%;
@@ -219,14 +219,13 @@ button {
 
   .form__field-show-password-button {
     position: absolute;
-    top: 25px;
-    right: 4%;
-    translate: 0 -18px;
+    top: 0;
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 35px;
-    aspect-ratio: 1;
+    height: 50px;
+    width: 70px;
     background-color: transparent;
     border: none;
     border-radius: var(--border-radius);
@@ -237,6 +236,7 @@ button {
     .eye-close, .eye-open {
       width: 29px;
       aspect-ratio: 1;
+      pointer-events: none;
     }
 
     .eye-open {
